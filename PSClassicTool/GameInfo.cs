@@ -45,8 +45,18 @@ namespace PSClassicTool
                 grpDisc.Visible = true;
                 grpDisc.Text = di.ToString();
                 txtBaseName.Text = di.BASENAME;
+                _CurrentDisc = di;
+                try
+                {
+                    pictureBox1.Image = Bitmap.FromFile(Managers.FileSystemManager.getInstance().GetBoxArtPath(di.GAME_ID, di.BASENAME));
+                }
+                catch(Exception exc)
+                {
+                    pictureBox1.Image = null;
+                }
             }
         }
+        private DatabaseManager.DiscInfo _CurrentDisc;
         private void LoadData()
         {
             txtGameName.Text = _gi.GAME_TITLE_STRING;
@@ -58,8 +68,8 @@ namespace PSClassicTool
             discInfos = DatabaseManager.getInstance().GetDiscInfo(_gi.GAME_ID);
             comboBox1.Items.Clear();
             comboBox1.Items.AddRange(discInfos);
-           
 
+            this.chkConfig.Checked = System.IO.File.Exists(Managers.FileSystemManager.getInstance().GetConfigFilePath(_gi.GAME_ID));
         }
 
         private void btnDelete_Click(object sender, EventArgs e)
@@ -72,6 +82,82 @@ namespace PSClassicTool
         {
             Managers.FileSystemManager.getInstance().DeleteGame(_gi.GAME_ID);
             DatabaseManager.getInstance().DeleteGame(_gi.GAME_ID);
+        }
+
+        private void btnDefaultConfig_Click(object sender, EventArgs e)
+        {
+            System.IO.File.Copy("pcsx.cfg", Managers.FileSystemManager.getInstance().GetConfigFilePath(_gi.GAME_ID));
+            LoadData();
+        }
+        private static Bitmap ResizeImage(Image image, int width, int height)
+        {
+            var destRect = new Rectangle(0, 0, width, height);
+            var destImage = new Bitmap(width, height);
+
+            destImage.SetResolution(image.HorizontalResolution, image.VerticalResolution);
+
+            using (var graphics = Graphics.FromImage(destImage))
+            {
+                
+                graphics.CompositingMode = System.Drawing.Drawing2D.CompositingMode.SourceCopy;
+                graphics.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
+                graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+                graphics.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
+
+                using (var wrapMode = new System.Drawing.Imaging.ImageAttributes())
+                {
+                    wrapMode.SetWrapMode(System.Drawing.Drawing2D.WrapMode.TileFlipXY);
+                    graphics.DrawImage(image, destRect, 0, 0, image.Width, image.Height, GraphicsUnit.Pixel, wrapMode);
+                }
+                
+            }
+
+            return destImage;
+        }
+        private void btnReplace_Click(object sender, EventArgs e)
+        {
+            if(txtUrl.Text == "")
+            {
+                OpenFileDialog ofd = new OpenFileDialog();
+                ofd.Filter = "PNG|*.png";
+                if(ofd.ShowDialog() == DialogResult.OK)
+                {
+                    System.IO.File.Copy(ofd.FileName, Managers.FileSystemManager.getInstance().GetBoxArtPath(_CurrentDisc.GAME_ID, _CurrentDisc.BASENAME));
+                    Console.Write("");
+                    try
+                    {
+                        pictureBox1.Image = Bitmap.FromFile(Managers.FileSystemManager.getInstance().GetBoxArtPath(_CurrentDisc.GAME_ID, _CurrentDisc.BASENAME));
+                    }
+                    catch (Exception exc)
+                    {
+                        pictureBox1.Image = null;
+                    }
+
+                }
+            }
+            else
+            {
+                System.Net.WebClient cli = new System.Net.WebClient();
+                byte[] data = cli.DownloadData(txtUrl.Text);
+                System.IO.MemoryStream ms = new System.IO.MemoryStream();
+                ms.Write(data, 0, data.Length);
+                ms.Seek(0,System.IO.SeekOrigin.Begin);
+                Image img = Bitmap.FromStream(ms);
+
+                Bitmap resized = ResizeImage(img, 500, 500);
+                resized.Save(Managers.FileSystemManager.getInstance().GetBoxArtPath(_CurrentDisc.GAME_ID, _CurrentDisc.BASENAME), System.Drawing.Imaging.ImageFormat.Png);
+
+                try
+                {
+                    pictureBox1.Image = Bitmap.FromFile(Managers.FileSystemManager.getInstance().GetBoxArtPath(_CurrentDisc.GAME_ID, _CurrentDisc.BASENAME));
+                }
+                catch (Exception exc)
+                {
+                    pictureBox1.Image = null;
+                }
+
+            }
         }
     }
 }

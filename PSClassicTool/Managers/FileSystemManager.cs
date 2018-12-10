@@ -8,7 +8,64 @@ namespace PSClassicTool.Managers
 {
     public class FileSystemManager
     {
-        public void CopyGame(string sourcePath, string destPath)
+        public static List<System.IO.DriveInfo> ListDrives()
+        {
+            List<System.IO.DriveInfo> validDrives = new List<System.IO.DriveInfo>();
+            System.IO.DriveInfo[] drives = System.IO.DriveInfo.GetDrives();
+            foreach(System.IO.DriveInfo di in drives)
+            {
+                if( di.DriveType == System.IO.DriveType.Removable)
+                {
+                    try
+                    {
+                        if (di.VolumeLabel == "SONY" && di.DriveFormat == "FAT32")
+                        {
+                            validDrives.Add(di);
+                        }
+                    }
+                    catch(Exception exc)
+                    {
+
+                    }
+                    
+                    
+                }
+            }
+            return validDrives;
+        }
+        public string GetBoxArtPath(long gameId, string basename)
+        {
+            return System.IO.Path.Combine(_BasePath, gameId.ToString() + "\\" + basename.ToString()+".png");
+        }
+        public string GetConfigFilePath(long gameId)
+        {
+            return System.IO.Path.Combine(_BasePath, gameId.ToString() + "\\pcsx.cfg");
+        }
+        public void SaveScript(string newScript)
+        {
+            try
+            {
+                System.IO.File.WriteAllText(System.IO.Path.Combine(_BasePath, "..", "lolhack\\lolhack.sh"), newScript.Replace("\r\n", "\n"));
+            }
+            catch(Exception exc)
+            {
+                Console.Write("");
+            }
+        }
+        public string GetScript()
+        {
+            try
+            {
+
+
+                return System.IO.File.ReadAllText(System.IO.Path.Combine(_BasePath, "..", "lolhack\\lolhack.sh")).Replace("\n","\r\n");
+            }
+            catch(Exception exc)
+            {
+                return "";
+            }
+        }
+         public void CopyGame(string sourcePath, string destPath)
         {
             if(!System.IO.Directory.Exists(destPath))
             {
