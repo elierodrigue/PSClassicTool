@@ -51,7 +51,7 @@
             this.listBox1.FormattingEnabled = true;
             this.listBox1.Location = new System.Drawing.Point(6, 21);
             this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(267, 472);
+            this.listBox1.Size = new System.Drawing.Size(267, 576);
             this.listBox1.TabIndex = 0;
             this.listBox1.SelectedIndexChanged += new System.EventHandler(this.listBox1_SelectedIndexChanged);
             // 
@@ -59,14 +59,14 @@
             // 
             this.groupBox1.Location = new System.Drawing.Point(369, 10);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(322, 559);
+            this.groupBox1.Size = new System.Drawing.Size(322, 633);
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "GameInfo";
             // 
             // btnAddGame
             // 
-            this.btnAddGame.Location = new System.Drawing.Point(133, 520);
+            this.btnAddGame.Location = new System.Drawing.Point(133, 607);
             this.btnAddGame.Name = "btnAddGame";
             this.btnAddGame.Size = new System.Drawing.Size(140, 36);
             this.btnAddGame.TabIndex = 2;
@@ -96,7 +96,7 @@
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(92, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -111,7 +111,7 @@
             // hToolStripMenuItem
             // 
             this.hToolStripMenuItem.Name = "hToolStripMenuItem";
-            this.hToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.hToolStripMenuItem.Size = new System.Drawing.Size(84, 22);
             this.hToolStripMenuItem.Text = "h:";
             // 
             // tabControl1
@@ -122,7 +122,7 @@
             this.tabControl1.Location = new System.Drawing.Point(0, 24);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(716, 793);
+            this.tabControl1.Size = new System.Drawing.Size(716, 691);
             this.tabControl1.TabIndex = 4;
             // 
             // tabPage1
@@ -133,7 +133,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(708, 767);
+            this.tabPage1.Size = new System.Drawing.Size(708, 665);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Games";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -144,7 +144,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(646, 595);
+            this.tabPage2.Size = new System.Drawing.Size(708, 767);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Script";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -155,7 +155,7 @@
             this.txtScript.Location = new System.Drawing.Point(3, 3);
             this.txtScript.Multiline = true;
             this.txtScript.Name = "txtScript";
-            this.txtScript.Size = new System.Drawing.Size(640, 589);
+            this.txtScript.Size = new System.Drawing.Size(702, 761);
             this.txtScript.TabIndex = 0;
             this.txtScript.TextChanged += new System.EventHandler(this.txtScript_TextChanged);
             // 
@@ -163,12 +163,14 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(716, 817);
+            this.ClientSize = new System.Drawing.Size(716, 715);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.menuStrip1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "PSClassicTool (BleemSync)";
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.tabControl1.ResumeLayout(false);

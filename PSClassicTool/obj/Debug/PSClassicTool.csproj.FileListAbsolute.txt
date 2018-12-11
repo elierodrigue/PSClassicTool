@@ -41,3 +41,4 @@ C:\Users\Elie\source\repos\PSClassicTool\PSClassicTool\obj\Debug\PSClassicTool.c
 C:\Users\Elie\source\repos\PSClassicTool\PSClassicTool\obj\Debug\PSClassicTool.exe
 C:\Users\Elie\source\repos\PSClassicTool\PSClassicTool\obj\Debug\PSClassicTool.pdb
 C:\Users\Elie\source\repos\PSClassicTool\PSClassicTool\bin\Debug\pcsx.cfg
+C:\Users\Elie\source\repos\PSClassicTool.git\PSClassicTool\bin\Debug\pcsx.cfg

@@ -8,44 +8,73 @@ namespace PSClassicTool.Managers
 {
     public class FileSystemManager
     {
-        public static List<System.IO.DriveInfo> ListDrives()
+        public class DriveInfoWrapper
         {
-            List<System.IO.DriveInfo> validDrives = new List<System.IO.DriveInfo>();
+            public bool isValid = false;
+            public System.IO.DriveInfo di;
+            public string message = "";
+        }
+        public static List<DriveInfoWrapper> ListDrives()
+        {
+            List<DriveInfoWrapper> validDrives = new List<DriveInfoWrapper>();
             System.IO.DriveInfo[] drives = System.IO.DriveInfo.GetDrives();
             foreach(System.IO.DriveInfo di in drives)
             {
+                DriveInfoWrapper diw = new DriveInfoWrapper();
+                diw.di = di;
+
                 if( di.DriveType == System.IO.DriveType.Removable)
                 {
                     try
                     {
                         if (di.VolumeLabel == "SONY" && di.DriveFormat == "FAT32")
                         {
-                            validDrives.Add(di);
+                            diw.isValid = true;
+                           
+                        }
+                        else
+                        {
+                            if(di.VolumeLabel != "SONY")
+                            {
+                                diw.message = "Not named SONY";
+                            }
+                            else
+                            {
+                                if(di.DriveFormat != "FAT32")
+                                {
+                                    diw.message = "Not FAT32";
+                                }
+                            }
                         }
                     }
                     catch(Exception exc)
                     {
-
+                        diw.message = exc.Message;
                     }
                     
                     
                 }
+                else
+                {
+                    diw.message = "Not removable";
+                }
+                validDrives.Add(diw);
             }
             return validDrives;
         }
         public string GetBoxArtPath(long gameId, string basename)
         {
-            return System.IO.Path.Combine(_BasePath, gameId.ToString() + "\\" + basename.ToString()+".png");
+            return System.IO.Path.Combine(_BasePath, "Games\\" + gameId.ToString() + "\\GameData\\" + basename.ToString()+".png");
         }
         public string GetConfigFilePath(long gameId)
         {
-            return System.IO.Path.Combine(_BasePath, gameId.ToString() + "\\pcsx.cfg");
+            return System.IO.Path.Combine(_BasePath, "Games\\"+gameId.ToString() + "\\GameData\\pcsx.cfg");
         }
         public void SaveScript(string newScript)
         {
             try
             {
-                System.IO.File.WriteAllText(System.IO.Path.Combine(_BasePath, "..", "lolhack\\lolhack.sh"), newScript.Replace("\r\n", "\n"));
+                System.IO.File.WriteAllText(System.IO.Path.Combine(_BasePath, "lolhack\\lolhack.sh"), newScript.Replace("\r\n", "\n"));
             }
             catch(Exception exc)
             {
@@ -58,7 +87,7 @@ namespace PSClassicTool.Managers
             {
 
 
-                return System.IO.File.ReadAllText(System.IO.Path.Combine(_BasePath, "..", "lolhack\\lolhack.sh")).Replace("\n","\r\n");
+                return System.IO.File.ReadAllText(System.IO.Path.Combine(_BasePath,  "lolhack\\lolhack.sh")).Replace("\n","\r\n");
             }
             catch(Exception exc)
             {
@@ -84,7 +113,7 @@ namespace PSClassicTool.Managers
         }
         public void DeleteGame(long gameId)
         {
-            string folder = System.IO.Path.Combine(_BasePath, gameId.ToString());
+            string folder = System.IO.Path.Combine(_BasePath,"Games\\"+ gameId.ToString());
             if(System.IO.Directory.Exists(folder))
             {
                 System.IO.Directory.Delete(folder, true);

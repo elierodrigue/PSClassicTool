@@ -23,7 +23,7 @@ namespace PSClassicTool.Properties
         {
             get
             {
-                return defaultInstance;
+                return Settings.defaultInstance;
             }
         }
     }

@@ -75,11 +75,11 @@ public class DatabaseManager
     }
     public void AddGame(string gameName, long GameId)
     {
-        string sql = "insert into GAME (GAME_ID,GAME_TITLE_STRING,PUBLISHER_NAME,RELEASE_YEAR,PLAYERS,RATING_IMAGE,GAME_MANUAL_QR_IMAGE,LINK_GAME_ID) values (" + GameId + ",'" + gameName + "','-',2018,2,'CERO_A','QR_CODE_GAME','')";
+        string sql = "insert into GAME (GAME_ID,GAME_TITLE_STRING,PUBLISHER_NAME,RELEASE_YEAR,PLAYERS,RATING_IMAGE,GAME_MANUAL_QR_IMAGE,LINK_GAME_ID) values (" + GameId + ",'" + gameName + "','-',2018,2,'CERO_A','QR_Code_GM','')";
         SQLiteCommand command = new SQLiteCommand(sql, conn);
         command.ExecuteNonQuery();
 
-        string folder = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(_basePath), GameId.ToString());
+        string folder = System.IO.Path.Combine(_basePath,"games\\"+GameId.ToString()+"\\gamedata");
         int index = 1;
         foreach(string cueFile in System.IO.Directory.GetFiles(folder,"*.cue",System.IO.SearchOption.TopDirectoryOnly))
         {
@@ -122,7 +122,7 @@ public class DatabaseManager
     public void LoadDatabase(string path)
     {
         _basePath = path;
-        conn = new SQLiteConnection("Data Source=" + path + ";Version=3;");
+        conn = new SQLiteConnection("Data Source=" +System.IO.Path.Combine( path, "System\\Databases\\regional.db") + "; Version=3;");
         conn.Open();
         //Check if its a proper PS Classic Database
         string sql = "SELECT name FROM sqlite_master WHERE type = 'table'";
