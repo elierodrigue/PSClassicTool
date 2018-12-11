@@ -1,22 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace PSClassicTool
 {
     public partial class Form1 : Form
     {
-        private string _BaseFolder = "";  
+        private string _BaseFolder = "";
         public Form1()
         {
             InitializeComponent();
-            
+
             LoadDrives();
             DatabaseManager.getInstance().GameDeleted += Form1_GameDeleted;
             /*
@@ -24,7 +18,7 @@ namespace PSClassicTool
             if(fbd.ShowDialog() == DialogResult.OK)
             {
                 Managers.FileSystemManager.getInstance().SetBasePath(fbd.SelectedPath);
-                
+
                 _BaseFolder = fbd.SelectedPath;
                 LoadData(fbd.SelectedPath);
             }
@@ -54,7 +48,7 @@ namespace PSClassicTool
         {
             foreach(ToolStripMenuItem mi in mnuDrive.DropDownItems)
             {
-               
+
                 mi.Checked = mi.Tag == di;
             }
             LoadData(System.IO.Path.Combine(di.Name, "games"));
@@ -63,7 +57,7 @@ namespace PSClassicTool
         {
 
             SelectDrive((System.IO.DriveInfo)((ToolStripMenuItem)sender).Tag);
-       
+
         }
 
         private void Form1_GameDeleted(object sender, EventArgs e)

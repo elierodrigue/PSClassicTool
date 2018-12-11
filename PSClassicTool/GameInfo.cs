@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace PSClassicTool
@@ -74,8 +68,8 @@ namespace PSClassicTool
 
         private void btnDelete_Click(object sender, EventArgs e)
         {
-           
-            
+
+
         }
 
         private void btnDelete_Click_1(object sender, EventArgs e)
@@ -98,7 +92,7 @@ namespace PSClassicTool
 
             using (var graphics = Graphics.FromImage(destImage))
             {
-                
+
                 graphics.CompositingMode = System.Drawing.Drawing2D.CompositingMode.SourceCopy;
                 graphics.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
                 graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
@@ -110,7 +104,7 @@ namespace PSClassicTool
                     wrapMode.SetWrapMode(System.Drawing.Drawing2D.WrapMode.TileFlipXY);
                     graphics.DrawImage(image, destRect, 0, 0, image.Width, image.Height, GraphicsUnit.Pixel, wrapMode);
                 }
-                
+
             }
 
             return destImage;
