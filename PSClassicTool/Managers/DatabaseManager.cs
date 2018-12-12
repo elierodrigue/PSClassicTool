@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.SQLite;
 public class DatabaseManager
 {
@@ -7,7 +8,7 @@ public class DatabaseManager
     {
         public override string ToString()
         {
-            return "Disc " + DISC_NUMBER.ToString();
+            return $"Disc {DISC_NUMBER}";
         }
         public long GAME_ID;
         public long DISC_NUMBER;
@@ -28,40 +29,40 @@ public class DatabaseManager
     }
     public void DeleteGame(long gameId)
     {
-        string discSQL = "delete from DISC where GAME_ID = " + gameId;
-        string gameSQL = "delete from GAME where GAME_ID = " + gameId;
+        string discSQL = $"DELETE FROM DISC WHERE GAME_ID = {gameId}";
+        string gameSQL = $"DELETE FROM GAME WHERE GAME_ID = {gameId}";
         SQLiteCommand command = new SQLiteCommand(discSQL, conn);
         command.ExecuteNonQuery();
         command = new SQLiteCommand(gameSQL, conn);
         command.ExecuteNonQuery();
-        if(GameDeleted!=null)
+        if (GameDeleted != null)
         {
             GameDeleted(null, null);
         }
     }
     public DiscInfo[] GetDiscInfo(long gameId)
     {
-        System.Collections.ArrayList ret = new System.Collections.ArrayList();
-        string sql = "SELECT * FROM DISC where GAME_ID = " + gameId;
+        var ret = new List<DiscInfo>();
+        string sql = $"SELECT * FROM DISC WHERE GAME_ID = {gameId}";
         SQLiteCommand command = new SQLiteCommand(sql, conn);
         SQLiteDataReader reader = command.ExecuteReader();
 
         while (reader.Read())
         {
-            DiscInfo gi = new DiscInfo();
-            gi.GAME_ID = (long)reader["GAME_ID"];
-        
-            gi.BASENAME = (string)reader["BASENAME"];
-            gi.DISC_NUMBER = (long)reader["DISC_NUMBER"];
-       
+            DiscInfo gi = new DiscInfo()
+            {
+                GAME_ID = (long)reader["GAME_ID"],
+                BASENAME = (string)reader["BASENAME"],
+                DISC_NUMBER = (long)reader["DISC_NUMBER"]
+            };
             ret.Add(gi);
         }
 
-        return (DiscInfo[])ret.ToArray(typeof(DiscInfo));
+        return ret.ToArray();
     }
     public long GetNextGameId()
     {
-        string sql = "select GAME_ID from Game order by Game_ID desc limit 1";
+        string sql = "SELECT GAME_ID FROM GAME ORDER BY GAME_ID DESC LIMIT 1";
         SQLiteCommand command = new SQLiteCommand(sql, conn);
         SQLiteDataReader reader = command.ExecuteReader();
 
@@ -73,19 +74,19 @@ public class DatabaseManager
         maxGameId++;
         return maxGameId;
     }
-    public void AddGame(string gameName, long GameId)
+    public void AddGame(string gameName, long gameId)
     {
-        string sql = "insert into GAME (GAME_ID,GAME_TITLE_STRING,PUBLISHER_NAME,RELEASE_YEAR,PLAYERS,RATING_IMAGE,GAME_MANUAL_QR_IMAGE,LINK_GAME_ID) values (" + GameId + ",'" + gameName + "','-',2018,2,'CERO_A','QR_Code_GM','')";
+        string sql = $"INSERT INTO GAME (GAME_ID, GAME_TITLE_STRING, PUBLISHER_NAME, RELEASE_YEAR, PLAYERS, RATING_IMAGE, GAME_MANUAL_QR_IMAGE, LINK_GAME_ID) values ({gameId}, '{gameName}', '-', 2018, 2, 'CERO_A', 'QR_Code_GM','')";
         SQLiteCommand command = new SQLiteCommand(sql, conn);
         command.ExecuteNonQuery();
 
-        string folder = System.IO.Path.Combine(_basePath,"games\\"+GameId.ToString()+"\\gamedata");
+        string folder = System.IO.Path.Combine(_basePath, $"games\\{gameId}\\gamedata");
         int index = 1;
-        foreach(string cueFile in System.IO.Directory.GetFiles(folder,"*.cue",System.IO.SearchOption.TopDirectoryOnly))
+        foreach (string cueFile in System.IO.Directory.GetFiles(folder, "*.cue", System.IO.SearchOption.TopDirectoryOnly))
         {
             string fileName = System.IO.Path.GetFileNameWithoutExtension(cueFile);
 
-            string discsql = "insert into DISC (GAME_ID,DISC_NUMBER,BASENAME) values (" + GameId.ToString() + "," + index.ToString() + ",'" + fileName + "')";
+            string discsql = $"INSERT INTO DISC (GAME_ID, DISC_NUMBER, BASENAME) VALUES ({gameId}, {index}, '{fileName}')";
 
             SQLiteCommand discCMD = new SQLiteCommand(discsql, conn);
             discCMD.ExecuteNonQuery();
@@ -100,32 +101,35 @@ public class DatabaseManager
     }
     public GameInfo[] ListGames()
     {
-        System.Collections.ArrayList ret = new System.Collections.ArrayList();
+        var ret = new List<GameInfo>();
         string sql = "SELECT * FROM GAME";
         SQLiteCommand command = new SQLiteCommand(sql, conn);
         SQLiteDataReader reader = command.ExecuteReader();
-       
+
         while (reader.Read())
         {
-            GameInfo gi = new GameInfo();
-            gi.GAME_ID = (long)reader["GAME_ID"];
-            gi.GAME_TITLE_STRING = (string)reader["GAME_TITLE_STRING"];
-            gi.PUBLISHER_NAME = (string)reader["PUBLISHER_NAME"];
-            gi.RELEASE_YEAR = (long)reader["RELEASE_YEAR"];
-            gi.PLAYERS = (long)reader["PLAYERS"];
+            GameInfo gi = new GameInfo()
+            {
+                GAME_ID = (long)reader["GAME_ID"],
+                GAME_TITLE_STRING = (string)reader["GAME_TITLE_STRING"],
+                PUBLISHER_NAME = (string)reader["PUBLISHER_NAME"],
+                RELEASE_YEAR = (long)reader["RELEASE_YEAR"],
+                PLAYERS = (long)reader["PLAYERS"]
+            };
             ret.Add(gi);
         }
 
-        return (GameInfo[])ret.ToArray(typeof(GameInfo));
+        return ret.ToArray();
     }
     string _basePath;
     public void LoadDatabase(string path)
     {
         _basePath = path;
-        conn = new SQLiteConnection("Data Source=" +System.IO.Path.Combine( path, "System\\Databases\\regional.db") + "; Version=3;");
+        var dataSource = System.IO.Path.Combine(path, "System\\Databases\\regional.db");
+        conn = new SQLiteConnection($"Data Source={dataSource};Version=3;");
         conn.Open();
         //Check if its a proper PS Classic Database
-        string sql = "SELECT name FROM sqlite_master WHERE type = 'table'";
+        string sql = "SELECT NAME FROM SQLITE_MASTER WHERE TYPE = 'table'";
         SQLiteCommand command = new SQLiteCommand(sql, conn);
         SQLiteDataReader reader = command.ExecuteReader();
         System.Collections.ArrayList ar = new System.Collections.ArrayList();
@@ -136,8 +140,8 @@ public class DatabaseManager
         {
             throw new Exception("Database is not a PS Classic Database");
         }
-        
-        
+
+
     }
     private SQLiteConnection conn;
     /*Singleton*/
@@ -146,7 +150,7 @@ public class DatabaseManager
     {
         return instance;
     }
-	private DatabaseManager()
-	{
-	}
+    private DatabaseManager()
+    {
+    }
 }

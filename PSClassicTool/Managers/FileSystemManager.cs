@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PSClassicTool.Managers
 {
@@ -18,7 +15,7 @@ namespace PSClassicTool.Managers
         {
             List<DriveInfoWrapper> validDrives = new List<DriveInfoWrapper>();
             System.IO.DriveInfo[] drives = System.IO.DriveInfo.GetDrives();
-            foreach(System.IO.DriveInfo di in drives)
+            foreach (System.IO.DriveInfo di in drives)
             {
                 DriveInfoWrapper diw = new DriveInfoWrapper();
                 diw.di = di;
@@ -47,12 +44,12 @@ namespace PSClassicTool.Managers
                             }
                         }
                     }
-                    catch(Exception exc)
+                    catch (Exception exc)
                     {
                         diw.message = exc.Message;
                     }
-                    
-                    
+
+
                 }
                 else
                 {
@@ -76,7 +73,7 @@ namespace PSClassicTool.Managers
             {
                 System.IO.File.WriteAllText(System.IO.Path.Combine(_BasePath, "lolhack\\lolhack.sh"), newScript.Replace("\r\n", "\n"));
             }
-            catch(Exception exc)
+            catch (Exception exc)
             {
                 Console.Write("");
             }
@@ -89,22 +86,22 @@ namespace PSClassicTool.Managers
 
                 return System.IO.File.ReadAllText(System.IO.Path.Combine(_BasePath,  "lolhack\\lolhack.sh")).Replace("\n","\r\n");
             }
-            catch(Exception exc)
+            catch (Exception exc)
             {
                 return "";
             }
         }
-         public void CopyGame(string sourcePath, string destPath)
+        public void CopyGame(string sourcePath, string destPath)
         {
-            if(!System.IO.Directory.Exists(destPath))
+            if (!System.IO.Directory.Exists(destPath))
             {
                 System.IO.Directory.CreateDirectory(destPath);
             }
-            foreach(string file in System.IO.Directory.GetFiles(sourcePath))
+            foreach (string file in System.IO.Directory.GetFiles(sourcePath))
             {
                 System.IO.File.Copy(file, System.IO.Path.Combine(destPath, System.IO.Path.GetFileName(file)));
             }
-            foreach(string directory in System.IO.Directory.GetDirectories(sourcePath))
+            foreach (string directory in System.IO.Directory.GetDirectories(sourcePath))
             {
                 string dirName = System.IO.Path.GetDirectoryName(directory);
                 CopyGame(directory, System.IO.Path.Combine(destPath, dirName));
