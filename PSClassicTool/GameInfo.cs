@@ -125,7 +125,7 @@ namespace PSClassicTool
                     }
                     catch (Exception exc)
                     {
-                        pictureBox1.Image = null;
+                        //pictureBox1.Image = null;
                     }
 
                 }

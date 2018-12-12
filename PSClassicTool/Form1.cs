@@ -30,18 +30,34 @@ namespace PSClassicTool
         }
         private void LoadDrives()
         {
-            List<System.IO.DriveInfo> driveInfos = Managers.FileSystemManager.ListDrives();
+            List<Managers.FileSystemManager.DriveInfoWrapper> driveInfos = Managers.FileSystemManager.ListDrives();
             mnuDrive.DropDownItems.Clear();
-            foreach(System.IO.DriveInfo di in driveInfos)
+            System.IO.DriveInfo validDi = null;
+            foreach(Managers.FileSystemManager.DriveInfoWrapper di in driveInfos)
             {
-                ToolStripMenuItem mi = new ToolStripMenuItem(di.Name + " (" + (di.TotalSize / 1024 / 1024).ToString() + "MB)");
-                mi.Tag = di;
-                mi.Click += Mi_Click;
-                mnuDrive.DropDownItems.Add(mi);
+                if (di.isValid)
+                {
+                    ToolStripMenuItem mi = new ToolStripMenuItem(di.di.Name + " (" + (di.di.TotalSize / 1024 / 1024).ToString() + "MB)");
+                    mi.Enabled = true;
+                    mi.Tag = di.di;
+                    mi.Click += Mi_Click;
+                    if(validDi==null)
+                    {
+                        validDi = di.di;
+                    }
+                    mnuDrive.DropDownItems.Add(mi);
+                }
+                else
+                {
+                    ToolStripMenuItem mi = new ToolStripMenuItem(di.di.Name + " (" + (di.message)+")");
+                    mi.Enabled = false;
+                
+                    mnuDrive.DropDownItems.Add(mi);
+                }
             }
-            if(driveInfos.Count > 0)
+            if(validDi!= null)
             {
-                SelectDrive(driveInfos[0]);
+                SelectDrive(validDi);
             }
         }
         private void SelectDrive(System.IO.DriveInfo di)
@@ -51,7 +67,7 @@ namespace PSClassicTool
 
                 mi.Checked = mi.Tag == di;
             }
-            LoadData(System.IO.Path.Combine(di.Name, "games"));
+            LoadData(di.Name);
         }
         private void Mi_Click(object sender, EventArgs e)
         {
@@ -70,7 +86,7 @@ namespace PSClassicTool
             _BaseFolder = baseFolder;
 
             listBox1.Items.Clear();
-            DatabaseManager.getInstance().LoadDatabase(System.IO.Path.Combine(baseFolder,"custom.db"));
+            DatabaseManager.getInstance().LoadDatabase(baseFolder);
             DatabaseManager.GameInfo[] games = DatabaseManager.getInstance().ListGames();
             listBox1.Items.AddRange(games);
             Managers.FileSystemManager.getInstance().SetBasePath(baseFolder);
@@ -94,7 +110,7 @@ namespace PSClassicTool
             if(fbd.ShowDialog() ==  DialogResult.OK)
             {
                 long gameId = DatabaseManager.getInstance().GetNextGameId();
-                string GamePath = System.IO.Path.Combine(_BaseFolder, gameId.ToString());
+                string GamePath = System.IO.Path.Combine(_BaseFolder,"Games\\"+ gameId.ToString()+"\\gamedata\\");
                 Managers.FileSystemManager.getInstance().CopyGame(fbd.SelectedPath, GamePath);
                 DatabaseManager.getInstance().AddGame(System.IO.Path.GetFileName(fbd.SelectedPath), gameId);
             }
@@ -108,6 +124,11 @@ namespace PSClassicTool
         private void txtScript_TextChanged(object sender, EventArgs e)
         {
             Managers.FileSystemManager.getInstance().SaveScript(txtScript.Text);
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }
