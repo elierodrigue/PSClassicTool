@@ -100,6 +100,7 @@ namespace PSClassicTool
 
         private void btnDefaultConfig_Click(object sender, EventArgs e)
         {
+
             System.IO.File.Copy("pcsx.cfg", GameManager.getInstance().GetConfigFilePath(_gi.GAME_ID));
             LoadData();
         }

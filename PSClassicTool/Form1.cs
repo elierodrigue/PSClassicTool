@@ -211,18 +211,25 @@ namespace PSClassicTool
         }
         private void FillSizeInfo()
         {
-            string drive = _BaseFolder;
-            foreach(System.IO.DriveInfo inf in System.IO.DriveInfo.GetDrives())
+            try
             {
-                if(drive.ToLower().StartsWith(inf.RootDirectory.FullName.ToLower()))
+                string drive = _BaseFolder;
+                foreach (System.IO.DriveInfo inf in System.IO.DriveInfo.GetDrives())
                 {
-                    long totalSize = inf.TotalSize;
-                    long used = totalSize - inf.AvailableFreeSpace;
-                    progressBar1.Value =(int)( used * 100 / totalSize);
-                    used = used / 1024 / 1024/1024;
-                    totalSize = totalSize / 1024 / 1024/1024;
-                    lblSpaceInfo.Text = Math.Round((double)used, 2).ToString() + "gB/" + Math.Round((double)totalSize, 2).ToString() + "gb";
+                    if (drive.ToLower().StartsWith(inf.RootDirectory.FullName.ToLower()))
+                    {
+                        long totalSize = inf.TotalSize;
+                        long used = totalSize - inf.AvailableFreeSpace;
+                        progressBar1.Value = (int)(used * 100 / totalSize);
+                        used = used / 1024 / 1024 / 1024;
+                        totalSize = totalSize / 1024 / 1024 / 1024;
+                        lblSpaceInfo.Text = Math.Round((double)used, 2).ToString() + "gB/" + Math.Round((double)totalSize, 2).ToString() + "gb";
+                    }
                 }
+            }
+            catch(Exception exc)
+            {
+
             }
         }
         private void button1_Click(object sender, EventArgs e)
@@ -260,6 +267,27 @@ namespace PSClassicTool
             }
             System.Diagnostics.ProcessStartInfo si = new System.Diagnostics.ProcessStartInfo(System.IO.Path.Combine(_BaseFolder, "BleemSync\\BleemSync.exe"));
             System.Diagnostics.Process.Start(si);
+        }
+
+        private void forceOpenFolderToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            FolderBrowserDialog fbd = new FolderBrowserDialog();
+            if(fbd.ShowDialog() == DialogResult.OK)
+            {
+                LoadData(fbd.SelectedPath);
+            }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            List<GameManager.GameInfo> gis = new List<GameManager.GameInfo>();
+            foreach (GameManager.GameInfo gi in listBox1.Items)
+            {
+                gis.Add(gi);
+            }
+            gis.Sort();
+            listBox1.Items.Clear();
+            listBox1.Items.AddRange(gis.ToArray());
         }
     }
 }

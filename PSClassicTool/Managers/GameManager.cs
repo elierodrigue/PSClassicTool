@@ -18,8 +18,12 @@ public class GameManager
             return DISC_NUMBER.CompareTo(inf.DISC_NUMBER);
         }
     }
-    public class GameInfo
+    public class GameInfo :IComparable<GameInfo>
     {
+        public int CompareTo(GameInfo inf)
+        {
+            return GAME_TITLE_STRING.CompareTo(inf.GAME_TITLE_STRING);
+        }
         public long GAME_ID;
         public string GAME_TITLE_STRING;
         public string PUBLISHER_NAME;
