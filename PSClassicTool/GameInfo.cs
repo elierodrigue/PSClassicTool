@@ -142,7 +142,16 @@ namespace PSClassicTool
                     Console.Write("");
                     try
                     {
-                        pictureBox1.Image = Bitmap.FromFile(GameManager.getInstance().GetBoxArtPath(_CurrentDisc.GAME_ID, _CurrentDisc.BASENAME));
+                        try
+                        {
+                            byte[] data = System.IO.File.ReadAllBytes(GameManager.getInstance().GetBoxArtPath(_gi.GAME_ID, _CurrentDisc.BASENAME));
+                            pictureBox1.Image = Bitmap.FromStream(new System.IO.MemoryStream(data));
+                        }
+                        catch (Exception exc)
+                        {
+                            pictureBox1.Image = null;
+                        }
+                       
                     }
                     catch (Exception exc)
                     {
@@ -209,7 +218,8 @@ namespace PSClassicTool
 
                     try
                     {
-                        pictureBox1.Image = Bitmap.FromFile(GameManager.getInstance().GetBoxArtPath(_CurrentDisc.GAME_ID, _CurrentDisc.BASENAME));
+                        byte[] dataf = System.IO.File.ReadAllBytes(GameManager.getInstance().GetBoxArtPath(_gi.GAME_ID, _CurrentDisc.BASENAME));
+                        pictureBox1.Image = Bitmap.FromStream(new System.IO.MemoryStream(dataf));
                     }
                     catch (Exception exc)
                     {

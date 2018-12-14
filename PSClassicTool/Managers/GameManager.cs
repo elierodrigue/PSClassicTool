@@ -20,6 +20,7 @@ public class GameManager
     }
     public class GameInfo :IComparable<GameInfo>
     {
+        public static bool sortByGameId = false;
         public int CompareTo(GameInfo inf)
         {
             return GAME_TITLE_STRING.CompareTo(inf.GAME_TITLE_STRING);
@@ -177,6 +178,9 @@ Year=1998*/
                 ret.Add(gi);
             }
         }
+        GameInfo.sortByGameId = true;
+        ret.Sort();
+        GameInfo.sortByGameId = false;
        /* string sql = "SELECT * FROM GAME";
         SQLiteCommand command = new SQLiteCommand(sql, conn);
         SQLiteDataReader reader = command.ExecuteReader();
