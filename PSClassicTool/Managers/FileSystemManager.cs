@@ -17,45 +17,52 @@ namespace PSClassicTool.Managers
             System.IO.DriveInfo[] drives = System.IO.DriveInfo.GetDrives();
             foreach (System.IO.DriveInfo di in drives)
             {
-                DriveInfoWrapper diw = new DriveInfoWrapper();
-                diw.di = di;
-
-                if( di.DriveType == System.IO.DriveType.Removable)
+                try
                 {
-                    try
+                    DriveInfoWrapper diw = new DriveInfoWrapper();
+                    diw.di = di;
+
+                    if (di.DriveType == System.IO.DriveType.Removable)
                     {
-                        if (di.VolumeLabel == "SONY" && di.DriveFormat == "FAT32")
+                        try
                         {
-                            diw.isValid = true;
-                           
-                        }
-                        else
-                        {
-                            if(di.VolumeLabel != "SONY")
+                            if (di.VolumeLabel == "SONY" && di.DriveFormat == "FAT32")
                             {
-                                diw.message = "Not named SONY";
+                                diw.isValid = true;
+
                             }
                             else
                             {
-                                if(di.DriveFormat != "FAT32")
+                                if (di.VolumeLabel != "SONY")
                                 {
-                                    diw.message = "Not FAT32";
+                                    diw.message = "Not named SONY";
+                                }
+                                else
+                                {
+                                    if (di.DriveFormat != "FAT32")
+                                    {
+                                        diw.message = "Not FAT32";
+                                    }
                                 }
                             }
                         }
+                        catch (Exception exc)
+                        {
+                            diw.message = exc.Message;
+                        }
+
+
                     }
-                    catch (Exception exc)
+                    else
                     {
-                        diw.message = exc.Message;
+                        diw.message = "Not removable";
                     }
-
-
+                    validDrives.Add(diw);
                 }
-                else
+                catch(Exception exc)
                 {
-                    diw.message = "Not removable";
+
                 }
-                validDrives.Add(diw);
             }
             return validDrives;
         }
@@ -91,6 +98,7 @@ namespace PSClassicTool.Managers
                 return "";
             }
         }
+
         public void CopyGame(string sourcePath, string destPath)
         {
             if (!System.IO.Directory.Exists(destPath))

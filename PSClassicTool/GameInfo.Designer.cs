@@ -41,13 +41,14 @@
             this.btnDelete = new System.Windows.Forms.Button();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.grpDisc = new System.Windows.Forms.GroupBox();
-            this.txtBaseName = new System.Windows.Forms.TextBox();
+            this.txtUrl = new System.Windows.Forms.TextBox();
+            this.btnReplace = new System.Windows.Forms.Button();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.txtBaseName = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
             this.chkConfig = new System.Windows.Forms.CheckBox();
             this.btnDefaultConfig = new System.Windows.Forms.Button();
-            this.btnReplace = new System.Windows.Forms.Button();
-            this.txtUrl = new System.Windows.Forms.TextBox();
+            this.chkDoubleResolution = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.nudYear)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudPlayers)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudGameId)).BeginInit();
@@ -61,6 +62,7 @@
             this.txtGameName.Name = "txtGameName";
             this.txtGameName.Size = new System.Drawing.Size(262, 20);
             this.txtGameName.TabIndex = 0;
+            this.txtGameName.TextChanged += new System.EventHandler(this.txtGameName_TextChanged);
             // 
             // label1
             // 
@@ -86,6 +88,7 @@
             this.txtPublisher.Name = "txtPublisher";
             this.txtPublisher.Size = new System.Drawing.Size(262, 20);
             this.txtPublisher.TabIndex = 2;
+            this.txtPublisher.TextChanged += new System.EventHandler(this.txtPublisher_TextChanged);
             // 
             // label3
             // 
@@ -117,6 +120,7 @@
             0,
             0,
             0});
+            this.nudYear.ValueChanged += new System.EventHandler(this.nudYear_ValueChanged);
             // 
             // nudPlayers
             // 
@@ -139,6 +143,7 @@
             0,
             0,
             0});
+            this.nudPlayers.ValueChanged += new System.EventHandler(this.nudPlayers_ValueChanged);
             // 
             // label4
             // 
@@ -184,7 +189,7 @@
             // 
             // btnDelete
             // 
-            this.btnDelete.Location = new System.Drawing.Point(6, 548);
+            this.btnDelete.Location = new System.Drawing.Point(3, 548);
             this.btnDelete.Name = "btnDelete";
             this.btnDelete.Size = new System.Drawing.Size(262, 42);
             this.btnDelete.TabIndex = 11;
@@ -195,7 +200,7 @@
             // comboBox1
             // 
             this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(6, 215);
+            this.comboBox1.Location = new System.Drawing.Point(3, 215);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(262, 21);
             this.comboBox1.TabIndex = 12;
@@ -206,19 +211,29 @@
             this.grpDisc.Controls.Add(this.btnReplace);
             this.grpDisc.Controls.Add(this.pictureBox1);
             this.grpDisc.Controls.Add(this.txtBaseName);
-            this.grpDisc.Location = new System.Drawing.Point(6, 242);
+            this.grpDisc.Location = new System.Drawing.Point(3, 242);
             this.grpDisc.Name = "grpDisc";
             this.grpDisc.Size = new System.Drawing.Size(262, 300);
             this.grpDisc.TabIndex = 13;
             this.grpDisc.TabStop = false;
             this.grpDisc.Text = "Disc";
             // 
-            // txtBaseName
+            // txtUrl
             // 
-            this.txtBaseName.Location = new System.Drawing.Point(6, 19);
-            this.txtBaseName.Name = "txtBaseName";
-            this.txtBaseName.Size = new System.Drawing.Size(250, 20);
-            this.txtBaseName.TabIndex = 0;
+            this.txtUrl.Location = new System.Drawing.Point(6, 265);
+            this.txtUrl.Name = "txtUrl";
+            this.txtUrl.Size = new System.Drawing.Size(250, 20);
+            this.txtUrl.TabIndex = 3;
+            // 
+            // btnReplace
+            // 
+            this.btnReplace.Location = new System.Drawing.Point(93, 236);
+            this.btnReplace.Name = "btnReplace";
+            this.btnReplace.Size = new System.Drawing.Size(75, 23);
+            this.btnReplace.TabIndex = 2;
+            this.btnReplace.Text = "Replace";
+            this.btnReplace.UseVisualStyleBackColor = true;
+            this.btnReplace.Click += new System.EventHandler(this.btnReplace_Click);
             // 
             // pictureBox1
             // 
@@ -228,6 +243,13 @@
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox1.TabIndex = 1;
             this.pictureBox1.TabStop = false;
+            // 
+            // txtBaseName
+            // 
+            this.txtBaseName.Location = new System.Drawing.Point(6, 19);
+            this.txtBaseName.Name = "txtBaseName";
+            this.txtBaseName.Size = new System.Drawing.Size(250, 20);
+            this.txtBaseName.TabIndex = 0;
             // 
             // label6
             // 
@@ -258,27 +280,22 @@
             this.btnDefaultConfig.UseVisualStyleBackColor = true;
             this.btnDefaultConfig.Click += new System.EventHandler(this.btnDefaultConfig_Click);
             // 
-            // btnReplace
+            // chkDoubleResolution
             // 
-            this.btnReplace.Location = new System.Drawing.Point(93, 236);
-            this.btnReplace.Name = "btnReplace";
-            this.btnReplace.Size = new System.Drawing.Size(75, 23);
-            this.btnReplace.TabIndex = 2;
-            this.btnReplace.Text = "Replace";
-            this.btnReplace.UseVisualStyleBackColor = true;
-            this.btnReplace.Click += new System.EventHandler(this.btnReplace_Click);
-            // 
-            // txtUrl
-            // 
-            this.txtUrl.Location = new System.Drawing.Point(6, 265);
-            this.txtUrl.Name = "txtUrl";
-            this.txtUrl.Size = new System.Drawing.Size(250, 20);
-            this.txtUrl.TabIndex = 3;
+            this.chkDoubleResolution.AutoSize = true;
+            this.chkDoubleResolution.Location = new System.Drawing.Point(78, 166);
+            this.chkDoubleResolution.Name = "chkDoubleResolution";
+            this.chkDoubleResolution.Size = new System.Drawing.Size(108, 17);
+            this.chkDoubleResolution.TabIndex = 18;
+            this.chkDoubleResolution.Text = "Double resolution";
+            this.chkDoubleResolution.UseVisualStyleBackColor = true;
+            this.chkDoubleResolution.CheckedChanged += new System.EventHandler(this.chkDoubleResolution_CheckedChanged);
             // 
             // GameInfo
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.chkDoubleResolution);
             this.Controls.Add(this.btnDefaultConfig);
             this.Controls.Add(this.chkConfig);
             this.Controls.Add(this.label6);
@@ -296,7 +313,7 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.txtGameName);
             this.Name = "GameInfo";
-            this.Size = new System.Drawing.Size(277, 600);
+            this.Size = new System.Drawing.Size(277, 650);
             ((System.ComponentModel.ISupportInitialize)(this.nudYear)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudPlayers)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudGameId)).EndInit();
@@ -330,5 +347,6 @@
         private System.Windows.Forms.Button btnDefaultConfig;
         private System.Windows.Forms.TextBox txtUrl;
         private System.Windows.Forms.Button btnReplace;
+        private System.Windows.Forms.CheckBox chkDoubleResolution;
     }
 }

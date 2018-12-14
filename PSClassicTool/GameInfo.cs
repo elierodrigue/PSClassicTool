@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
-
+using IniParser;
+using IniParser.Model;
 namespace PSClassicTool
 {
     public partial class GameInfo : UserControl
     {
         DatabaseManager.DiscInfo[] discInfos;
         DatabaseManager.GameInfo _gi;
+        bool loadingData = false;
         public GameInfo(DatabaseManager.GameInfo gi)
         {
             InitializeComponent();
@@ -53,6 +55,7 @@ namespace PSClassicTool
         private DatabaseManager.DiscInfo _CurrentDisc;
         private void LoadData()
         {
+            loadingData = true;
             txtGameName.Text = _gi.GAME_TITLE_STRING;
             txtPublisher.Text = _gi.PUBLISHER_NAME;
             nudYear.Value = _gi.RELEASE_YEAR;
@@ -64,6 +67,16 @@ namespace PSClassicTool
             comboBox1.Items.AddRange(discInfos);
 
             this.chkConfig.Checked = System.IO.File.Exists(Managers.FileSystemManager.getInstance().GetConfigFilePath(_gi.GAME_ID));
+            chkDoubleResolution.Checked = false;
+            chkDoubleResolution.Enabled = chkConfig.Checked;
+            if (chkDoubleResolution.Enabled)
+            {
+
+                
+                chkDoubleResolution.Checked = ConfigFileHandler.GetSettingValue(Managers.FileSystemManager.getInstance().GetConfigFilePath(_gi.GAME_ID), "gpu_neon.enhancement_enable") == "1";
+                
+            }
+            loadingData = false;
         }
 
         private void btnDelete_Click(object sender, EventArgs e)
@@ -152,6 +165,50 @@ namespace PSClassicTool
                 }
 
             }
+        }
+
+        private void chkDoubleResolution_CheckedChanged(object sender, EventArgs e)
+        {
+          
+            if(!loadingData)
+            {
+                string targetValue = "0";
+                if(chkDoubleResolution.Checked)
+                {
+                    targetValue = "1";
+                }
+                ConfigFileHandler.SetSettingValue(Managers.FileSystemManager.getInstance().GetConfigFilePath(_gi.GAME_ID), "gpu_neon.enhancement_enable", targetValue);
+            }
+        }
+        private void SaveGame()
+        {
+            if (!loadingData)
+            {
+                DatabaseManager.getInstance().UpdateGame(_gi.GAME_ID, _gi.GAME_TITLE_STRING, _gi.PUBLISHER_NAME, _gi.RELEASE_YEAR, _gi.PLAYERS);
+            }
+        }
+        private void txtGameName_TextChanged(object sender, EventArgs e)
+        {
+            _gi.GAME_TITLE_STRING = txtGameName.Text;
+            SaveGame();
+        }
+
+        private void txtPublisher_TextChanged(object sender, EventArgs e)
+        {
+            _gi.PUBLISHER_NAME = txtPublisher.Text;
+            SaveGame();
+        }
+
+        private void nudYear_ValueChanged(object sender, EventArgs e)
+        {
+            _gi.RELEASE_YEAR =(long) nudYear.Value;
+            SaveGame();
+        }
+
+        private void nudPlayers_ValueChanged(object sender, EventArgs e)
+        {
+            _gi.PLAYERS = (long)nudPlayers.Value;
+            SaveGame();
         }
     }
 }

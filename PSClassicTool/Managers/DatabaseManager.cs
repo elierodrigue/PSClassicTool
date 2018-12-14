@@ -74,9 +74,15 @@ public class DatabaseManager
         maxGameId++;
         return maxGameId;
     }
-    public void AddGame(string gameName, long gameId)
+    public void UpdateGame(long gameId, string gameName,  string publishername, long year, long nbPlayer)
     {
-        string sql = $"INSERT INTO GAME (GAME_ID, GAME_TITLE_STRING, PUBLISHER_NAME, RELEASE_YEAR, PLAYERS, RATING_IMAGE, GAME_MANUAL_QR_IMAGE, LINK_GAME_ID) values ({gameId}, '{gameName}', '-', 2018, 2, 'CERO_A', 'QR_Code_GM','')";
+        string sql = $"UPDATE GAME set GAME_TITLE_STRING = '{gameName}', PUBLISHER_NAME = '{publishername}', RELEASE_YEAR = {year}, PLAYERS = {nbPlayer} where GAME_ID = {gameId}";
+        SQLiteCommand command = new SQLiteCommand(sql, conn);
+        command.ExecuteNonQuery();
+    }
+    public void AddGame(string gameName, long gameId,string publishername,int year, int nbPlayer)
+    {
+        string sql = $"INSERT INTO GAME (GAME_ID, GAME_TITLE_STRING, PUBLISHER_NAME, RELEASE_YEAR, PLAYERS, RATING_IMAGE, GAME_MANUAL_QR_IMAGE, LINK_GAME_ID) values ({gameId}, '{gameName}', '{publishername}', {year}, {nbPlayer}, 'CERO_A', 'QR_Code_GM','')";
         SQLiteCommand command = new SQLiteCommand(sql, conn);
         command.ExecuteNonQuery();
 

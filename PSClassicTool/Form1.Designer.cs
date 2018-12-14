@@ -40,6 +40,8 @@
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.txtScript = new System.Windows.Forms.TextBox();
+            this.downloadBleemSyncToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.menuStrip1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -78,7 +80,8 @@
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
-            this.mnuDrive});
+            this.mnuDrive,
+            this.downloadBleemSyncToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(716, 24);
@@ -111,7 +114,7 @@
             // hToolStripMenuItem
             // 
             this.hToolStripMenuItem.Name = "hToolStripMenuItem";
-            this.hToolStripMenuItem.Size = new System.Drawing.Size(84, 22);
+            this.hToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.hToolStripMenuItem.Text = "h:";
             // 
             // tabControl1
@@ -144,7 +147,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(708, 767);
+            this.tabPage2.Size = new System.Drawing.Size(708, 665);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Script";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -155,9 +158,23 @@
             this.txtScript.Location = new System.Drawing.Point(3, 3);
             this.txtScript.Multiline = true;
             this.txtScript.Name = "txtScript";
-            this.txtScript.Size = new System.Drawing.Size(702, 761);
+            this.txtScript.Size = new System.Drawing.Size(702, 659);
             this.txtScript.TabIndex = 0;
             this.txtScript.TextChanged += new System.EventHandler(this.txtScript_TextChanged);
+            // 
+            // downloadBleemSyncToolStripMenuItem
+            // 
+            this.downloadBleemSyncToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenuItem1});
+            this.downloadBleemSyncToolStripMenuItem.Name = "downloadBleemSyncToolStripMenuItem";
+            this.downloadBleemSyncToolStripMenuItem.Size = new System.Drawing.Size(134, 20);
+            this.downloadBleemSyncToolStripMenuItem.Text = "Download BleemSync";
+            this.downloadBleemSyncToolStripMenuItem.DropDownOpening += new System.EventHandler(this.downloadBleemSyncToolStripMenuItem_DropDownOpening);
+            // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(177, 6);
             // 
             // Form1
             // 
@@ -196,6 +213,8 @@
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.TextBox txtScript;
+        private System.Windows.Forms.ToolStripMenuItem downloadBleemSyncToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
     }
 }
 

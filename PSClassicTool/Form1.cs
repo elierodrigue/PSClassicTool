@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-
+using System.Net;
 namespace PSClassicTool
 {
     public partial class Form1 : Form
@@ -37,22 +37,36 @@ namespace PSClassicTool
             {
                 if (di.isValid)
                 {
-                    ToolStripMenuItem mi = new ToolStripMenuItem(di.di.Name + " (" + (di.di.TotalSize / 1024 / 1024).ToString() + "MB)");
-                    mi.Enabled = true;
-                    mi.Tag = di.di;
-                    mi.Click += Mi_Click;
-                    if(validDi==null)
+                    try
                     {
-                        validDi = di.di;
+                        ToolStripMenuItem mi = new ToolStripMenuItem(di.di.Name + " (" + (di.di.TotalSize / 1024 / 1024).ToString() + "MB)");
+                        mi.Enabled = true;
+                        mi.Tag = di.di;
+                        mi.Click += Mi_Click;
+                        if (validDi == null)
+                        {
+                            validDi = di.di;
+                        }
+                        mnuDrive.DropDownItems.Add(mi);
                     }
-                    mnuDrive.DropDownItems.Add(mi);
+                    catch(Exception exc)
+                    {
+
+                    }
                 }
                 else
                 {
-                    ToolStripMenuItem mi = new ToolStripMenuItem(di.di.Name + " (" + (di.message)+")");
-                    mi.Enabled = false;
-                
-                    mnuDrive.DropDownItems.Add(mi);
+                    try
+                    {
+                        ToolStripMenuItem mi = new ToolStripMenuItem(di.di.Name + " (" + (di.message) + ")");
+                        mi.Enabled = false;
+
+                        mnuDrive.DropDownItems.Add(mi);
+                    }
+                    catch(Exception exc)
+                    {
+
+                    }
                 }
             }
             if(validDi!= null)
@@ -111,8 +125,11 @@ namespace PSClassicTool
             {
                 long gameId = DatabaseManager.getInstance().GetNextGameId();
                 string GamePath = System.IO.Path.Combine(_BaseFolder,"Games\\"+ gameId.ToString()+"\\gamedata\\");
-                Managers.FileSystemManager.getInstance().CopyGame(fbd.SelectedPath, GamePath);
-                DatabaseManager.getInstance().AddGame(System.IO.Path.GetFileName(fbd.SelectedPath), gameId);
+                
+
+                GameCopy gc = new GameCopy(fbd.SelectedPath, GamePath);
+                gc.ShowDialog();
+                DatabaseManager.getInstance().AddGame(System.IO.Path.GetFileName(fbd.SelectedPath), gameId,"-",2018,2);
             }
         }
 
@@ -128,6 +145,60 @@ namespace PSClassicTool
 
         private void Form1_Load(object sender, EventArgs e)
         {
+
+        }
+
+        private void downloadBleemSyncToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
+        {
+            downloadBleemSyncToolStripMenuItem.DropDownItems.Clear();
+            System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12;
+                /*   System.Net.WebClient cli = new System.Net.WebClient();
+               System.Net.ServicePointManager.Expect100Continue = true;
+              ;
+               string json = cli.DownloadString("https://api.github.com/repos/pathartl/BleemSync/releases");*/
+            HttpWebRequest req = (HttpWebRequest) HttpWebRequest.Create("https://api.github.com/repos/pathartl/BleemSync/releases");
+            req.UserAgent = "PSClassicTool";
+            HttpWebResponse resp =(HttpWebResponse) req.GetResponse();
+            System.IO.StreamReader rdr = new   System.IO.StreamReader(resp.GetResponseStream());
+            string respData= rdr.ReadToEnd();
+            rdr.Close();
+            resp.Close();
+
+
+            Newtonsoft.Json.Linq.JArray obj = Newtonsoft.Json.Linq.JArray.Parse(respData);
+            foreach(Newtonsoft.Json.Linq.JObject o in obj)
+            {
+                ToolStripMenuItem itm = new ToolStripMenuItem();
+                itm.Text = o["name"].ToString();
+                itm.Tag = o;
+                downloadBleemSyncToolStripMenuItem.DropDownItems.Add(itm);
+                foreach(Newtonsoft.Json.Linq.JObject subObj in o["assets"])
+                {
+                    ToolStripMenuItem subItm = new ToolStripMenuItem();
+                    subItm.Text = subObj["name"].ToString();
+                    subItm.Tag = subObj;
+                    subItm.Click += SubItm_Click;
+                    itm.DropDownItems.Add(subItm);
+                }
+
+            }
+            
+
+
+
+
+
+
+            if (downloadBleemSyncToolStripMenuItem.DropDownItems.Count == 0)
+            {
+                downloadBleemSyncToolStripMenuItem.DropDownItems.Add("-");
+            }
+        }
+
+        private void SubItm_Click(object sender, EventArgs e)
+        {
+            string theUrl = ((Newtonsoft.Json.Linq.JObject)((ToolStripMenuItem)sender).Tag)["browser_download_url"].ToString();
+            System.Diagnostics.Process.Start(theUrl);
 
         }
     }
