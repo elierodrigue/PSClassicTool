@@ -36,12 +36,15 @@
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuDrive = new System.Windows.Forms.ToolStripMenuItem();
             this.hToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.tabControl1 = new System.Windows.Forms.TabControl();
-            this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.txtScript = new System.Windows.Forms.TextBox();
             this.downloadBleemSyncToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
+            this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.button1 = new System.Windows.Forms.Button();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.txtScript = new System.Windows.Forms.TextBox();
+            this.progressBar1 = new System.Windows.Forms.ProgressBar();
+            this.lblSpaceInfo = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -53,7 +56,7 @@
             this.listBox1.FormattingEnabled = true;
             this.listBox1.Location = new System.Drawing.Point(6, 21);
             this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(267, 576);
+            this.listBox1.Size = new System.Drawing.Size(267, 524);
             this.listBox1.TabIndex = 0;
             this.listBox1.SelectedIndexChanged += new System.EventHandler(this.listBox1_SelectedIndexChanged);
             // 
@@ -114,8 +117,22 @@
             // hToolStripMenuItem
             // 
             this.hToolStripMenuItem.Name = "hToolStripMenuItem";
-            this.hToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.hToolStripMenuItem.Size = new System.Drawing.Size(84, 22);
             this.hToolStripMenuItem.Text = "h:";
+            // 
+            // downloadBleemSyncToolStripMenuItem
+            // 
+            this.downloadBleemSyncToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenuItem1});
+            this.downloadBleemSyncToolStripMenuItem.Name = "downloadBleemSyncToolStripMenuItem";
+            this.downloadBleemSyncToolStripMenuItem.Size = new System.Drawing.Size(134, 20);
+            this.downloadBleemSyncToolStripMenuItem.Text = "Download BleemSync";
+            this.downloadBleemSyncToolStripMenuItem.DropDownOpening += new System.EventHandler(this.downloadBleemSyncToolStripMenuItem_DropDownOpening);
+            // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(57, 6);
             // 
             // tabControl1
             // 
@@ -130,6 +147,9 @@
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.lblSpaceInfo);
+            this.tabPage1.Controls.Add(this.progressBar1);
+            this.tabPage1.Controls.Add(this.button1);
             this.tabPage1.Controls.Add(this.listBox1);
             this.tabPage1.Controls.Add(this.btnAddGame);
             this.tabPage1.Controls.Add(this.groupBox1);
@@ -140,6 +160,16 @@
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Games";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(6, 607);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(121, 36);
+            this.button1.TabIndex = 3;
+            this.button1.Text = "BleemSync";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // tabPage2
             // 
@@ -162,19 +192,21 @@
             this.txtScript.TabIndex = 0;
             this.txtScript.TextChanged += new System.EventHandler(this.txtScript_TextChanged);
             // 
-            // downloadBleemSyncToolStripMenuItem
+            // progressBar1
             // 
-            this.downloadBleemSyncToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripMenuItem1});
-            this.downloadBleemSyncToolStripMenuItem.Name = "downloadBleemSyncToolStripMenuItem";
-            this.downloadBleemSyncToolStripMenuItem.Size = new System.Drawing.Size(134, 20);
-            this.downloadBleemSyncToolStripMenuItem.Text = "Download BleemSync";
-            this.downloadBleemSyncToolStripMenuItem.DropDownOpening += new System.EventHandler(this.downloadBleemSyncToolStripMenuItem_DropDownOpening);
+            this.progressBar1.Location = new System.Drawing.Point(8, 578);
+            this.progressBar1.Name = "progressBar1";
+            this.progressBar1.Size = new System.Drawing.Size(265, 23);
+            this.progressBar1.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
+            this.progressBar1.TabIndex = 4;
             // 
-            // toolStripMenuItem1
+            // lblSpaceInfo
             // 
-            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(177, 6);
+            this.lblSpaceInfo.AutoSize = true;
+            this.lblSpaceInfo.Location = new System.Drawing.Point(8, 562);
+            this.lblSpaceInfo.Name = "lblSpaceInfo";
+            this.lblSpaceInfo.Size = new System.Drawing.Size(0, 13);
+            this.lblSpaceInfo.TabIndex = 5;
             // 
             // Form1
             // 
@@ -192,6 +224,7 @@
             this.menuStrip1.PerformLayout();
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
+            this.tabPage1.PerformLayout();
             this.tabPage2.ResumeLayout(false);
             this.tabPage2.PerformLayout();
             this.ResumeLayout(false);
@@ -215,6 +248,9 @@
         private System.Windows.Forms.TextBox txtScript;
         private System.Windows.Forms.ToolStripMenuItem downloadBleemSyncToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Label lblSpaceInfo;
+        private System.Windows.Forms.ProgressBar progressBar1;
     }
 }
 

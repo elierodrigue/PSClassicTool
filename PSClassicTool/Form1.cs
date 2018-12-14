@@ -12,7 +12,7 @@ namespace PSClassicTool
             InitializeComponent();
 
             LoadDrives();
-            DatabaseManager.getInstance().GameDeleted += Form1_GameDeleted;
+            GameManager.getInstance().GameDeleted += Form1_GameDeleted;
             /*
             FolderBrowserDialog fbd = new FolderBrowserDialog();
             if(fbd.ShowDialog() == DialogResult.OK)
@@ -30,10 +30,10 @@ namespace PSClassicTool
         }
         private void LoadDrives()
         {
-            List<Managers.FileSystemManager.DriveInfoWrapper> driveInfos = Managers.FileSystemManager.ListDrives();
+            List<GameManager.DriveInfoWrapper> driveInfos = GameManager.ListDrives();
             mnuDrive.DropDownItems.Clear();
             System.IO.DriveInfo validDi = null;
-            foreach(Managers.FileSystemManager.DriveInfoWrapper di in driveInfos)
+            foreach(GameManager.DriveInfoWrapper di in driveInfos)
             {
                 if (di.isValid)
                 {
@@ -100,11 +100,12 @@ namespace PSClassicTool
             _BaseFolder = baseFolder;
 
             listBox1.Items.Clear();
-            DatabaseManager.getInstance().LoadDatabase(baseFolder);
-            DatabaseManager.GameInfo[] games = DatabaseManager.getInstance().ListGames();
+            GameManager.getInstance().LoadDatabase(baseFolder);
+            GameManager.GameInfo[] games = GameManager.getInstance().ListGames();
             listBox1.Items.AddRange(games);
-            Managers.FileSystemManager.getInstance().SetBasePath(baseFolder);
-            txtScript.Text = Managers.FileSystemManager.getInstance().GetScript();
+          
+            txtScript.Text = GameManager.getInstance().GetScript();
+            FillSizeInfo();
         }
 
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
@@ -112,7 +113,7 @@ namespace PSClassicTool
             groupBox1.Controls.Clear();
             if(listBox1.SelectedItem!= null)
             {
-                GameInfo gi = new GameInfo((DatabaseManager.GameInfo)listBox1.SelectedItem);
+                GameInfo gi = new GameInfo((GameManager.GameInfo)listBox1.SelectedItem);
                 gi.Dock = DockStyle.Fill;
                 groupBox1.Controls.Add(gi);
             }
@@ -123,13 +124,20 @@ namespace PSClassicTool
             FolderBrowserDialog fbd = new FolderBrowserDialog();
             if(fbd.ShowDialog() ==  DialogResult.OK)
             {
-                long gameId = DatabaseManager.getInstance().GetNextGameId();
+                long gameId = GameManager.getInstance().GetNextGameId();
                 string GamePath = System.IO.Path.Combine(_BaseFolder,"Games\\"+ gameId.ToString()+"\\gamedata\\");
-                
 
+                GameManager.GameInfo gi = new GameManager.GameInfo();
+                gi.GAME_ID = gameId;
+                string[] splittedPath = fbd.SelectedPath.Split(new string[] { "\\" }, StringSplitOptions.RemoveEmptyEntries);
+                gi.GAME_TITLE_STRING = splittedPath[splittedPath.Length - 1];
+                gi.RELEASE_YEAR = 2018;
+                gi.PLAYERS = 2;
                 GameCopy gc = new GameCopy(fbd.SelectedPath, GamePath);
                 gc.ShowDialog();
-                DatabaseManager.getInstance().AddGame(System.IO.Path.GetFileName(fbd.SelectedPath), gameId,"-",2018,2);
+                gi.SaveIni();
+                LoadData(_BaseFolder);
+               
             }
         }
 
@@ -140,7 +148,7 @@ namespace PSClassicTool
 
         private void txtScript_TextChanged(object sender, EventArgs e)
         {
-            Managers.FileSystemManager.getInstance().SaveScript(txtScript.Text);
+            GameManager.getInstance().SaveScript(txtScript.Text);
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -200,6 +208,58 @@ namespace PSClassicTool
             string theUrl = ((Newtonsoft.Json.Linq.JObject)((ToolStripMenuItem)sender).Tag)["browser_download_url"].ToString();
             System.Diagnostics.Process.Start(theUrl);
 
+        }
+        private void FillSizeInfo()
+        {
+            string drive = _BaseFolder;
+            foreach(System.IO.DriveInfo inf in System.IO.DriveInfo.GetDrives())
+            {
+                if(drive.ToLower().StartsWith(inf.RootDirectory.FullName.ToLower()))
+                {
+                    long totalSize = inf.TotalSize;
+                    long used = totalSize - inf.AvailableFreeSpace;
+                    progressBar1.Value =(int)( used * 100 / totalSize);
+                    used = used / 1024 / 1024/1024;
+                    totalSize = totalSize / 1024 / 1024/1024;
+                    lblSpaceInfo.Text = Math.Round((double)used, 2).ToString() + "gB/" + Math.Round((double)totalSize, 2).ToString() + "gb";
+                }
+            }
+        }
+        private void button1_Click(object sender, EventArgs e)
+        {
+            /*Make sure the games are out of the cleanup order*/
+            for (int x = 0; x < listBox1.Items.Count; x++)
+            {
+                GameManager.GameInfo gi = (GameManager.GameInfo)listBox1.Items[x];
+              
+                    string originalPath = GameManager.getInstance().GetGamePath(gi.GAME_ID);
+                gi.GAME_ID = gi.GAME_ID + 9001;
+                    string destPath = GameManager.getInstance().GetGamePath(gi.GAME_ID);
+                    System.IO.Directory.Move(originalPath, destPath);
+
+                
+            }
+
+            /*Fix Game Ids*/
+            for (int x =0;x<listBox1.Items.Count;x++)
+            {
+                GameManager.GameInfo gi = (GameManager.GameInfo)listBox1.Items[x];
+                if(gi.GAME_ID != x+1)
+                {
+                    string originalPath = GameManager.getInstance().GetGamePath(gi.GAME_ID);
+                    gi.GAME_ID = x + 1;
+                    string destPath = GameManager.getInstance().GetGamePath(gi.GAME_ID);
+                    System.IO.Directory.Move(originalPath, destPath);
+
+                }
+            }
+
+            foreach(GameManager.GameInfo gi in listBox1.Items)
+            {
+                gi.SaveIni();
+            }
+            System.Diagnostics.ProcessStartInfo si = new System.Diagnostics.ProcessStartInfo(System.IO.Path.Combine(_BaseFolder, "BleemSync\\BleemSync.exe"));
+            System.Diagnostics.Process.Start(si);
         }
     }
 }

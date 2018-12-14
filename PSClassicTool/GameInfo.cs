@@ -7,10 +7,10 @@ namespace PSClassicTool
 {
     public partial class GameInfo : UserControl
     {
-        DatabaseManager.DiscInfo[] discInfos;
-        DatabaseManager.GameInfo _gi;
+        GameManager.DiscInfo[] discInfos;
+        GameManager.GameInfo _gi;
         bool loadingData = false;
-        public GameInfo(DatabaseManager.GameInfo gi)
+        public GameInfo(GameManager.GameInfo gi)
         {
             InitializeComponent();
             _gi = gi;
@@ -28,9 +28,9 @@ namespace PSClassicTool
 
         private void ComboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            LoadDisc((DatabaseManager.DiscInfo)comboBox1.SelectedItem);
+            LoadDisc((GameManager.DiscInfo)comboBox1.SelectedItem);
         }
-        private void LoadDisc(DatabaseManager.DiscInfo di)
+        private void LoadDisc(GameManager.DiscInfo di)
         {
             if(di == null)
             {
@@ -44,7 +44,8 @@ namespace PSClassicTool
                 _CurrentDisc = di;
                 try
                 {
-                    pictureBox1.Image = Bitmap.FromFile(Managers.FileSystemManager.getInstance().GetBoxArtPath(di.GAME_ID, di.BASENAME));
+                    byte[] data = System.IO.File.ReadAllBytes(GameManager.getInstance().GetBoxArtPath(di.GAME_ID, di.BASENAME));
+                    pictureBox1.Image = Bitmap.FromStream(new System.IO.MemoryStream(data));
                 }
                 catch(Exception exc)
                 {
@@ -52,7 +53,7 @@ namespace PSClassicTool
                 }
             }
         }
-        private DatabaseManager.DiscInfo _CurrentDisc;
+        private GameManager.DiscInfo _CurrentDisc;
         private void LoadData()
         {
             loadingData = true;
@@ -62,18 +63,18 @@ namespace PSClassicTool
             nudPlayers.Value = _gi.PLAYERS;
             nudGameId.Value = _gi.GAME_ID;
 
-            discInfos = DatabaseManager.getInstance().GetDiscInfo(_gi.GAME_ID);
+            discInfos = GameManager.getInstance().GetDiscInfo(_gi.GAME_ID);
             comboBox1.Items.Clear();
             comboBox1.Items.AddRange(discInfos);
 
-            this.chkConfig.Checked = System.IO.File.Exists(Managers.FileSystemManager.getInstance().GetConfigFilePath(_gi.GAME_ID));
+            this.chkConfig.Checked = System.IO.File.Exists(GameManager.getInstance().GetConfigFilePath(_gi.GAME_ID));
             chkDoubleResolution.Checked = false;
             chkDoubleResolution.Enabled = chkConfig.Checked;
             if (chkDoubleResolution.Enabled)
             {
 
                 
-                chkDoubleResolution.Checked = ConfigFileHandler.GetSettingValue(Managers.FileSystemManager.getInstance().GetConfigFilePath(_gi.GAME_ID), "gpu_neon.enhancement_enable") == "1";
+                chkDoubleResolution.Checked = ConfigFileHandler.GetSettingValue(GameManager.getInstance().GetConfigFilePath(_gi.GAME_ID), "gpu_neon.enhancement_enable") == "1";
                 
             }
             loadingData = false;
@@ -87,13 +88,19 @@ namespace PSClassicTool
 
         private void btnDelete_Click_1(object sender, EventArgs e)
         {
-            Managers.FileSystemManager.getInstance().DeleteGame(_gi.GAME_ID);
-            DatabaseManager.getInstance().DeleteGame(_gi.GAME_ID);
+            if (pictureBox1.Image != null)
+            {
+                pictureBox1.Image.Dispose();
+            }
+            pictureBox1.Image = null;
+            Application.DoEvents();
+            GameManager.getInstance().DeleteGame(_gi.GAME_ID);
+        
         }
 
         private void btnDefaultConfig_Click(object sender, EventArgs e)
         {
-            System.IO.File.Copy("pcsx.cfg", Managers.FileSystemManager.getInstance().GetConfigFilePath(_gi.GAME_ID));
+            System.IO.File.Copy("pcsx.cfg", GameManager.getInstance().GetConfigFilePath(_gi.GAME_ID));
             LoadData();
         }
         private static Bitmap ResizeImage(Image image, int width, int height)
@@ -130,11 +137,11 @@ namespace PSClassicTool
                 ofd.Filter = "PNG|*.png";
                 if(ofd.ShowDialog() == DialogResult.OK)
                 {
-                    System.IO.File.Copy(ofd.FileName, Managers.FileSystemManager.getInstance().GetBoxArtPath(_CurrentDisc.GAME_ID, _CurrentDisc.BASENAME));
+                    System.IO.File.Copy(ofd.FileName, GameManager.getInstance().GetBoxArtPath(_CurrentDisc.GAME_ID, _CurrentDisc.BASENAME));
                     Console.Write("");
                     try
                     {
-                        pictureBox1.Image = Bitmap.FromFile(Managers.FileSystemManager.getInstance().GetBoxArtPath(_CurrentDisc.GAME_ID, _CurrentDisc.BASENAME));
+                        pictureBox1.Image = Bitmap.FromFile(GameManager.getInstance().GetBoxArtPath(_CurrentDisc.GAME_ID, _CurrentDisc.BASENAME));
                     }
                     catch (Exception exc)
                     {
@@ -145,23 +152,72 @@ namespace PSClassicTool
             }
             else
             {
-                System.Net.WebClient cli = new System.Net.WebClient();
-                byte[] data = cli.DownloadData(txtUrl.Text);
-                System.IO.MemoryStream ms = new System.IO.MemoryStream();
-                ms.Write(data, 0, data.Length);
-                ms.Seek(0,System.IO.SeekOrigin.Begin);
-                Image img = Bitmap.FromStream(ms);
-
-                Bitmap resized = ResizeImage(img, 500, 500);
-                resized.Save(Managers.FileSystemManager.getInstance().GetBoxArtPath(_CurrentDisc.GAME_ID, _CurrentDisc.BASENAME), System.Drawing.Imaging.ImageFormat.Png);
-
                 try
                 {
-                    pictureBox1.Image = Bitmap.FromFile(Managers.FileSystemManager.getInstance().GetBoxArtPath(_CurrentDisc.GAME_ID, _CurrentDisc.BASENAME));
-                }
-                catch (Exception exc)
-                {
+                    System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12;
+                    System.Net.WebClient cli = new System.Net.WebClient();
+                    byte[] data = cli.DownloadData(txtUrl.Text);
+                    System.IO.MemoryStream ms = new System.IO.MemoryStream();
+                    ms.Write(data, 0, data.Length);
+                    ms.Seek(0, System.IO.SeekOrigin.Begin);
+                    Image img = Bitmap.FromStream(ms);
+
+                    Bitmap resized = ResizeImage(img, 500, 500);
+                    if(pictureBox1.Image != null)
+                    {
+                        pictureBox1.Image.Dispose();
+                    }
+                    Application.DoEvents();
+                  
                     pictureBox1.Image = null;
+                    if(System.IO.File.Exists(GameManager.getInstance().GetBoxArtPath(_CurrentDisc.GAME_ID, _CurrentDisc.BASENAME)))
+                    {
+                        int retryCounter = 0;
+                        bool success = false;
+                        while (!success)
+                        {
+                            if (System.IO.File.Exists(GameManager.getInstance().GetBoxArtPath(_CurrentDisc.GAME_ID, _CurrentDisc.BASENAME)))
+                            {
+                                try
+                                {
+                                    System.IO.File.Delete(GameManager.getInstance().GetBoxArtPath(_CurrentDisc.GAME_ID, _CurrentDisc.BASENAME));
+                                    success = true;
+                                }
+                                catch (Exception exc)
+                                {
+                                    success = false;
+                                    retryCounter++;
+                                    System.Threading.Thread.Sleep(100);
+                                }
+                            }
+                            else
+                            {
+                                success = true;
+                            }
+                            if(success == false)
+                            {
+                                if(retryCounter == 100)
+                                {
+                                    MessageBox.Show("Unable to delete " + GameManager.getInstance().GetBoxArtPath(_CurrentDisc.GAME_ID, _CurrentDisc.BASENAME) + "\r\nDelete it manually to be able to replace that cover.");
+                                }
+                            }
+                        }
+                        
+                    }
+                    resized.Save(GameManager.getInstance().GetBoxArtPath(_CurrentDisc.GAME_ID, _CurrentDisc.BASENAME), System.Drawing.Imaging.ImageFormat.Png);
+
+                    try
+                    {
+                        pictureBox1.Image = Bitmap.FromFile(GameManager.getInstance().GetBoxArtPath(_CurrentDisc.GAME_ID, _CurrentDisc.BASENAME));
+                    }
+                    catch (Exception exc)
+                    {
+                        pictureBox1.Image = null;
+                    }
+                }
+                catch(Exception exc)
+                {
+
                 }
 
             }
@@ -177,14 +233,15 @@ namespace PSClassicTool
                 {
                     targetValue = "1";
                 }
-                ConfigFileHandler.SetSettingValue(Managers.FileSystemManager.getInstance().GetConfigFilePath(_gi.GAME_ID), "gpu_neon.enhancement_enable", targetValue);
+                ConfigFileHandler.SetSettingValue(GameManager.getInstance().GetConfigFilePath(_gi.GAME_ID), "gpu_neon.enhancement_enable", targetValue);
             }
         }
         private void SaveGame()
         {
             if (!loadingData)
             {
-                DatabaseManager.getInstance().UpdateGame(_gi.GAME_ID, _gi.GAME_TITLE_STRING, _gi.PUBLISHER_NAME, _gi.RELEASE_YEAR, _gi.PLAYERS);
+                _gi.SaveIni();
+              
             }
         }
         private void txtGameName_TextChanged(object sender, EventArgs e)
